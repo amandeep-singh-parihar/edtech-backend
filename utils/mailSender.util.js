@@ -1,5 +1,5 @@
-const nodemailer = require("nodemailer");
-require("dotenv").config();
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 const mailSender = async (email, title, body) => {
   try {
@@ -12,7 +12,7 @@ const mailSender = async (email, title, body) => {
     });
 
     let info = transpoter.sendMail({
-      from: "StudyNotion by Amandeep",
+      from: 'StudyNotion by Amandeep',
       to: `${email}`,
       subject: `${title}`,
       html: `${body}`,

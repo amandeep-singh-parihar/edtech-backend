@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema(
   {
@@ -17,38 +17,53 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    contactNumber: {
+      type: Number,
+      required: true,
+      trim: true,
+    },
     password: {
+      type: String,
+      required: true,
+    },
+    confirmPassword: {
       type: String,
       required: true,
     },
     accountType: {
       type: String,
-      enum: ["Admin", "Student", "Instructor"],
+      enum: ['Admin', 'Student', 'Instructor'],
       required: true,
     },
     additionalDetails: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Profile",
+      ref: 'Profile',
       required: true,
     },
     courses: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Course",
+        ref: 'Course',
       },
     ],
     images: {
       type: String,
       required: true,
     },
+    token: {
+      type: String,
+    },
+    resetPasswordExpires: {
+      type: Date,
+    },
     courseProgress: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "CourseProgress",
+        ref: 'CourseProgress',
       },
     ],
   },
-  { timeStamp: true },
+  { timeStamp: true }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const tagsSchema = new mongoose.Schema(
   {
@@ -10,10 +10,10 @@ const tagsSchema = new mongoose.Schema(
     },
     course: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Course",
+      ref: 'Course',
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
-module.exports = mongoose.model("Tag", tagsSchema);
+module.exports = mongoose.model('Tag', tagsSchema);

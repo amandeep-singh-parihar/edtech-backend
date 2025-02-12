@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-require("dotenv").config();
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 exports.dbConnect = () => {
   mongoose
@@ -8,11 +8,11 @@ exports.dbConnect = () => {
       useUnifiedTopology: true,
     })
     .then(() => {
-      console.log("DB connection Succesfull");
+      console.log('DB connection Succesfull');
     })
     .catch((err) => {
       console.error(err);
-      console.log("DB connection Failed!");
+      console.log('DB connection Failed!');
       process.exit(1);
     });
 };

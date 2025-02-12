@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const profileSchema = new mongoose.Schema(
   {
@@ -17,7 +17,7 @@ const profileSchema = new mongoose.Schema(
       trim: true,
     },
   },
-  { timeStamp: true },
+  { timeStamp: true }
 );
 
-module.exports = mongoose.model("Profile", profileSchema);
+module.exports = mongoose.model('Profile', profileSchema);

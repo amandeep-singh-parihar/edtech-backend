@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const SubsectionSchema = new mongoose.Schema(
   {
@@ -16,7 +16,7 @@ const SubsectionSchema = new mongoose.Schema(
       type: String,
     },
   },
-  { timeStamp: true },
+  { timeStamp: true }
 );
 
-module.exports = mongoose.model("SubSection", SubsectionSchema);
+module.exports = mongoose.model('SubSection', SubsectionSchema);

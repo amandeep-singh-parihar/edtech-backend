@@ -239,10 +239,70 @@ exports.login = async (req, res) => {
 exports.changePassword = async (req, res) => {
   try {
     //get data from the body
+    const { email, password, newPassword, confirmNewPassword } = req.body;
+    if (!email) {
+      return res.status(500).json({
+        success: false,
+        message: 'email must not be empty',
+      });
+    }
+    const user_existed = await User.findOne({ email });
+    if (!user_existed) {
+      return res.status(400).json({
+        success: false,
+        message: 'No user exited with this email',
+      });
+    }
     //get old passwrod , newpassword, confirm new password
     //validation
+    if (!password) {
+      return res.status(500).json({
+        success: false,
+        message: 'Old password must not be empty',
+      });
+    }
+    const old_password = await bcrypt.compare(password, user_existed.password);
+    if (!old_password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Wrong password',
+      });
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Newpassword and confirmPassword must be same',
+      });
+    }
+
     //update the password
+    let hashed_password;
+    try {
+      hashed_password = await bcrypt.hash(newPassword, 10);
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: 'Error in hasing the password',
+      });
+    }
+    const response = await User.findOneAndUpdate(
+      { email },
+      { password: hashed_password },
+      { new: true }
+    );
     //send mail= password updated
+    await mailSender(email, `Password Changed successfully`);
     //return response
-  } catch (error) {}
+    res.status(200).json({
+      success: true,
+      message: 'Password Changed successfully',
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: 'Error is Changing password',
+    });
+  }
 };

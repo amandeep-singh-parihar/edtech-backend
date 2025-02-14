@@ -78,6 +78,19 @@ exports.createCourse = async (req, res) => {
     );
 
     // update TAG schem HM//
+    await Tag.findByIdAndUpdate(
+      tag,
+      {
+        $set: {
+          name: courseName,
+          description: courseDescription,
+        },
+        $push: {
+          courses: newCourse._id,
+        },
+      },
+      { new: true }
+    );
 
     res.status(200).json({
       success: true,

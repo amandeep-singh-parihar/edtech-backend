@@ -1,5 +1,5 @@
 const Course = require('../models/Course.model');
-const Tag = require('../models/Tags.model');
+const Category = require('../models/Category.model');
 const User = require('../models/User.model');
 const { uploadImageToCloudinary } = require('../utils/imageUploader.util');
 
@@ -7,7 +7,7 @@ const { uploadImageToCloudinary } = require('../utils/imageUploader.util');
 exports.createCourse = async (req, res) => {
   try {
     //fetch data
-    const { courseName, courseDescription, whatYouWillLearn, price, tag } =
+    const { courseName, courseDescription, whatYouWillLearn, price, category } =
       req.body;
 
     //get thumbnail
@@ -19,7 +19,7 @@ exports.createCourse = async (req, res) => {
       !courseDescription ||
       !whatYouWillLearn ||
       !price ||
-      !tag
+      !category
     ) {
       return res.status(400).json({
         success: false,
@@ -40,12 +40,12 @@ exports.createCourse = async (req, res) => {
       });
     }
 
-    // check give tag is valid or not
-    const tagDetails = await Tag.findById(tag); // here the tag we get in the req is id as we passed it as id in the course schema
-    if (!tagDetails) {
+    // check given category is valid or not
+    const categoryDetails = await Category.findById(category); // here the category we get in the req is id as we passed it as id in the course schema
+    if (!categoryDetails) {
       return res.status(404).json({
         success: false,
-        message: 'Tag Details not found',
+        message: 'Category Details not found',
       });
     }
 
@@ -62,7 +62,7 @@ exports.createCourse = async (req, res) => {
       instructor: instructorDetails._id,
       whatYouWillLearn: whatYouWillLearn,
       price,
-      tag: tagDetails._id,
+      category: categoryDetails._id,
       thumbnail: uploaded_thumbnail.secure_url,
     });
 
@@ -77,9 +77,9 @@ exports.createCourse = async (req, res) => {
       { new: true }
     );
 
-    // update TAG schem HM//
-    await Tag.findByIdAndUpdate(
-      tag,
+    // update Category schem HM//
+    await Category.findByIdAndUpdate(
+      category,
       {
         $set: {
           name: courseName,

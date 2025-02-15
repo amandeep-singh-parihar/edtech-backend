@@ -56,5 +56,84 @@ exports.createSubsection = async (req, res) => {
 };
 
 // update subsection
+exports.updateSubsection = async (req, res) => {
+  try {
+    // fetch all data
+    const { title, timeDuration, description, sectionId, subSectionId } =
+      req.body;
+    // fetch the video
+    const video = req.files.videos;
+    // validation
+    // the fileds which are give have to update rest are not
+    // if video given update the video to the cloudinary
 
-// delte subsection
+    // update the subsection
+    let updateFields = {};
+    if (title) updateFields.title = title;
+    if (timeDuration) updateFields.timeDuration = timeDuration;
+    if (description) updateFields.description = description;
+
+    // if the video is there to update
+    if (video) {
+      const videoUploadResponse = await uploadImageToCloudinary(
+        video,
+        process.env.FOLDER_NAME
+      );
+      updateFields.videoUrl = videoUploadResponse.secure_url;
+    }
+    const update_subsection = await SubSection.findByIdAndUpdate(
+      subSectionId,
+      updateFields,
+      { new: true }
+    );
+
+    if (!update_subsection) {
+      return res.status(404).json({
+        success: false,
+        message: 'Subsection not found',
+      });
+    }
+
+    // update the section no need as the subsection filed is already in it
+
+    // return res
+    res.status(200).json({
+      success: true,
+      message: 'Subsection updated successfully',
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: 'Error while upadating subsection',
+    });
+  }
+};
+
+// delete subsection
+exports.deleteSubsection = async (req, res) => {
+  try {
+    //fetch the subseciton id
+    const { subSectionId } = req.body;
+    // validation
+    if (!subSectionId) {
+      return res.status(500).json({
+        success: false,
+        message: 'subsection can not be empty',
+      });
+    }
+    // find and delete it
+    const delete_subsection = await SubSection.findByIdAndDelete(subSectionId);
+    // return the res
+    res.status(200).json({
+      success: true,
+      message: 'Subsection deleted Successfully',
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: 'Error whie deleting the subsection',
+    });
+  }
+};

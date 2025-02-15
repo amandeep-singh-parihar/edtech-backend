@@ -14,7 +14,7 @@ const sectionSchema = new mongoose.Schema(
       },
     ],
   },
-  { timeStamp: true }
+  { timeStamps: true }
 );
 
 module.exports = mongoose.model('Section', sectionSchema);

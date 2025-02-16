@@ -97,9 +97,9 @@ exports.verifySignature = async (req, res) => {
     const webhookSecret = '12345678';
     const signature = req.headers['x-razorpay-signature']; // Razorpay sends a signature in the request header (x-razorpay-signature) to verify authenticity
 
-    const shasum = crypto.createHmac('sha256', webhookSecret);
-    shasum.update(JSON.stringify(req.body)); // the output of the hash algo is called digest which is in the form hexadecimal
-    const digest = shasum.digest('hex');
+    const shasum = crypto.createHmac('sha256', webhookSecret); // Create HMAC with SHA-256
+    shasum.update(JSON.stringify(req.body)); // The update() method of crypto.createHmac() requires a string or a buffer, but req.body or req.headers is usually an object (JSON).
+    const digest = shasum.digest('hex'); // the output of the hash algo is called digest which is in the form hexadecimal
 
     // Compare Hash With Razorpay’s Signature
     if (signature === digest) {

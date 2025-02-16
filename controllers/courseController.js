@@ -133,3 +133,44 @@ exports.getAllCourses = async (req, res) => {
     });
   }
 };
+
+// get specifc course using id very thing must be populated
+// get course details
+exports.getCourseById = async (req, res) => {
+  try {
+    const course_id = req.body;
+    const specific_course = await Course.findById(course_id)
+      .populate({
+        path: 'instructor', //inside the courseSchema add the instructor details
+        populate: {
+          path: 'additionalDetails', // now inside the instructor(UserSchema) add the additinalDetails
+        },
+      })
+      .populate('category')
+      .populate('ratingAndreviews')
+      .populate({
+        path: 'courseContent', // now courseContent is ref with section
+        populate: {
+          path: 'subSection', //  now the sectionSchema have the subSection field
+        },
+      })
+      .exec();
+
+    if (!specific_course) {
+      return res.status(400).json({
+        success: false,
+        message: `No course availabel with this ID : ${course_id} `,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Course with ${course_id} get fetched`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error while fecthing this course',
+    });
+  }
+};

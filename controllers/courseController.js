@@ -95,6 +95,7 @@ exports.createCourse = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Course created successfully',
+      data: newCourse,
     });
   } catch (error) {
     res.status(500).json({
@@ -136,10 +137,10 @@ exports.getAllCourses = async (req, res) => {
 
 // get specifc course using id very thing must be populated
 // get course details
-exports.getCourseById = async (req, res) => {
+exports.getCourseDetails = async (req, res) => {
   try {
-    const course_id = req.body;
-    const specific_course = await Course.findById(course_id)
+    const { courseId } = req.body;
+    const specific_course = await Course.findById(courseId)
       .populate({
         path: 'instructor', //inside the courseSchema add the instructor details
         populate: {
@@ -159,18 +160,20 @@ exports.getCourseById = async (req, res) => {
     if (!specific_course) {
       return res.status(400).json({
         success: false,
-        message: `No course availabel with this ID : ${course_id} `,
+        message: `No course availabel with this ID : ${courseId} `,
       });
     }
 
     res.status(200).json({
       success: true,
-      message: `Course with ${course_id} get fetched`,
+      message: `Course with ${courseId} get fetched`,
+      course: specific_course, // Sending the course data in the response
     });
   } catch (error) {
+    console.error(error); // Debugging
     res.status(500).json({
       success: false,
-      message: 'Error while fecthing this course',
+      message: 'Error while fetching this course',
     });
   }
 };

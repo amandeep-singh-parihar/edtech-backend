@@ -19,7 +19,7 @@ exports.resetPasswordToken = async (req, res) => {
     if (!user) {
       return res.status(500).json({
         success: false,
-        message: 'Your email is not registered with us',
+        message: `This Email : ${email} is not registered with Us Enter a Valid Email`,
       });
     }
 
@@ -67,11 +67,11 @@ exports.resetPassword = async (req, res) => {
     if (password !== confirmPassword) {
       return res.json({
         success: false,
-        message: 'password not matching',
+        message: 'Password and ConfirmPassword must be same',
       });
     }
     //get userdetails from db using token
-    const userDetails = await userDetails.findOne({ token: token });
+    const userDetails = await User.findOne({ token: token });
     //if no entry -> invalid token
     if (!userDetails) {
       return res.json({
@@ -83,7 +83,7 @@ exports.resetPassword = async (req, res) => {
     if (userDetails.resetPasswordExpires < Date.now()) {
       return res.json({
         success: false,
-        message: 'Token is expiresd , plz regenerate it',
+        message: 'Token is expiresd , please regenerate it',
       });
     }
     // hash pwd
@@ -97,7 +97,7 @@ exports.resetPassword = async (req, res) => {
       });
     }
     // update password
-    await User.findByIdAndUpdate(
+    await User.findOneAndUpdate(
       { token: token },
       { password: hashed_password },
       { new: true }
@@ -105,12 +105,13 @@ exports.resetPassword = async (req, res) => {
     // return res
     return res.status(200).json({
       success: true,
+      // debug:password,
       message: 'Password reset successfully',
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      error: 'Error reseting the password',
+      error: 'Error while reseting the password',
     });
   }
 };

@@ -5,8 +5,19 @@ exports.updateProfile = async (req, res) => {
   try {
     // fetch data
     const { gender, dateOfBirth, about, contactNumber } = req.body;
+
+    //Debug
+    console.log('Request Body:', req.body); // Log the body to ensure the data is correct
     // get user id
     const userId = req.user.id;
+
+    //Debug
+    console.log('Request Body:', req.body); // Log the body to ensure the data is correct
+
+    // log for debugging
+    console.log('Request Body:', req.body);
+    console.log('User ID:', userId);
+
     // validation
     if (!gender || !contactNumber || !userId) {
       return res.status(400).json({
@@ -47,6 +58,11 @@ exports.updateProfile = async (req, res) => {
     profileDetails.gender = gender;
     profileDetails.contactNumber = contactNumber;
 
+    //Debugging
+    console.log('Profile Details before save:', profileDetails);
+
+    await profileDetails.save();
+
     await profileDetails.save();
 
     // return res
@@ -56,7 +72,7 @@ exports.updateProfile = async (req, res) => {
       data: profileDetails,
     });
   } catch (error) {
-    console.log(error);
+    console.log('Error Details : ', error);
     res.status(500).json({
       success: false,
       message: 'Error while updating profile',
@@ -65,10 +81,10 @@ exports.updateProfile = async (req, res) => {
 };
 
 // delete account (profile)
-
 exports.deleteAccount = async (req, res) => {
   try {
     // get id
+    // console.log("Printing the user : ",req.user);
     const userId = req.user.id;
     const userDetails = await User.findById(userId);
     //validation
@@ -94,7 +110,7 @@ exports.deleteAccount = async (req, res) => {
     console.log(error);
     res.status(500).json({
       success: false,
-      message: 'Error while updating profile',
+      message: 'Error while deleting profile',
     });
   }
 };
@@ -114,6 +130,7 @@ exports.getAllUserDetails = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'User data fetched successfully',
+      data:userDetails,
     });
   } catch (error) {
     console.log(error);
@@ -123,3 +140,37 @@ exports.getAllUserDetails = async (req, res) => {
     });
   }
 };
+
+//update display picture -> ****incomplete*****
+exports.updateDisplayPicture = async (req, res) => {
+  // fetch data
+  const token =
+    req.cookies.token ||
+    req.body.token ||
+    req.header('Authorization').replace('Bearer', '');
+
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: 'Token missing !',
+    });
+  }
+
+  try {
+    const decode = jwt.decode(token, process.env.JWT_SCREAT);
+    console.log(decode);
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: 'token is invalid',
+    });
+  }
+
+  // const {}
+  // fetch the image
+  // fetch the user
+  // validate all
+  // supported type
+  // save the entry in the database
+};
+// get enrolled courses

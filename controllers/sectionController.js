@@ -78,9 +78,10 @@ exports.updateSection = async (req, res) => {
 // delete section
 exports.deleteSection = async (req, res) => {
   try {
+    //test with req.params
     //fetch id -> assuming section id in params
     const { sectionId } = req.params;
-
+    //update course
     if (!sectionId) {
       return res.status(500).json({
         success: false,

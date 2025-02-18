@@ -31,6 +31,8 @@ exports.createRating = async (req, res) => {
       _id: courseId,
       studentsEnrolled: { $elemMatch: { $eq: userId } },
     });
+    // $elemMatch is a MongoDB operator used to match elements inside an array.
+    // $eq: userId checks if any element in the studentsEnrolled array is equal to userId.
     if (!courseDetails) {
       return res.status(400).json({
         success: false,
@@ -110,6 +112,7 @@ exports.getAverageRating = async (req, res) => {
       { $match: { course: new mongoose.Types.ObjectId(courseId) } },
       { $group: { _id: null, averageRating: { $avg: '$rating' } } },
     ]);
+    // Here, _id: null means that all documents are grouped together into a single group (i.e., no specific grouping based on a field).
 
     // return rating
     if (result.length > 0) {
@@ -162,3 +165,50 @@ exports.getAllRating = async (req, res) => {
 };
 
 // get rating and reviews regarding speicific course id
+exports.getRatingAndReviewsById = async (req, res) => {
+  try {
+    // fetch the course id
+    const { courseId } = req.body;
+    // validate the course id
+    if (!courseId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Course id must not be empty',
+      });
+    }
+    // fetch the rating and review
+    const courseDetails = await Course.findById(courseId);
+    // validate the rating and review
+    if (!courseDetails) {
+      return res.status(400).json({
+        success: false,
+        message: 'No course with give id',
+      });
+    }
+
+    const rating_and_review = await RatingAndReview.aggregate([
+      { $match: { course: new mongoose.Types.ObjectId(courseId) } },
+      { $group: { _id: null, averageRating: { $avg: '$rating' } } },
+    ]);
+
+    // return res if there are reveiw
+    if (rating_and_review.length > 0) {
+      return res.status(200).json({
+        success: true,
+        averageRating: rating_and_review[0].averageRating, //result[0] contain { _id: null, averageRating: 4.5 }
+      });
+    }
+
+    // return res if no review and rating are there
+    return res.status(200).json({
+      success: true,
+      message: 'Average rating is 0, no rating given till now',
+      averageRating: 0,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error while fetching the Rating and Review of this course',
+    });
+  }
+};

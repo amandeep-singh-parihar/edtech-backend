@@ -60,8 +60,8 @@ exports.sendOtp = async (req, res) => {
 exports.signup = async (req, res) => {
   try {
     const {
-      FirstName,
-      LastName,
+      firstName,
+      lastName,
       email,
       contactNumber,
       password,
@@ -72,8 +72,8 @@ exports.signup = async (req, res) => {
 
     // check all field
     if (
-      !FirstName ||
-      !LastName ||
+      !firstName ||
+      !lastName ||
       !email ||
       !contactNumber ||
       !password ||
@@ -109,15 +109,17 @@ exports.signup = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(1);
     // Sorts the results by the createdAt field in descending order (-1 means newest first).
-    console.log(recentOtp);
+    // console.log(recentOtp);
+    console.log('Stored OTP : ', recentOtp?.otp);
+    console.log('Entered OTP : ', otp);
 
     //validate otp
-    if (recentOtp.length == 0) {
+    if (!recentOtp) {
       return res.status(400).json({
         success: false,
         message: 'OTP not found',
       });
-    } else if (otp !== recentOtp) {
+    } else if (otp !== recentOtp.otp) {
       return res.status(400).json({
         success: false,
         message: 'Invalid OTP',
@@ -143,14 +145,14 @@ exports.signup = async (req, res) => {
     });
 
     const userPayload = {
-      FirstName,
-      LastName,
+      firstName,
+      lastName,
       email,
       contactNumber,
       password: hashed_password,
       accountType,
-      accountDetails: profileDetails._id,
-      image: `https://api.dicebear.com/5.x/initials/svg?seed=${FirstName} ${LastName}`,
+      additionalDetails: profileDetails._id,
+      image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName}%20${lastName}`,
     };
     const user = await User.create(userPayload);
 
@@ -188,7 +190,7 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'User is not registered',
+        message: 'User is not registered us',
       });
     }
 
@@ -223,7 +225,7 @@ exports.login = async (req, res) => {
     } else {
       return res.status(403).json({
         success: false,
-        message: 'Password Incorrect',
+        message: 'Password is incorrect',
       });
     }
   } catch (error) {

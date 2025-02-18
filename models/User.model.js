@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema(
   {
-    FirstName: {
+    firstName: {
       type: String,
       required: true,
       trim: true,
     },
-    LastName: {
+    lastName: {
       type: String,
       required: true,
       trim: true,
@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema(
     },
     confirmPassword: {
       type: String,
-      required: true,
+      // required: true,
     },
     accountType: {
       type: String,
@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema(
     additionalDetails: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Profile',
-      required: true,
+      // required: true,
     },
     courses: [
       {
@@ -46,9 +46,9 @@ const userSchema = new mongoose.Schema(
         ref: 'Course',
       },
     ],
-    images: {
+    image: {
       type: String,
-      required: true,
+      // required: true,
     },
     token: {
       type: String,
@@ -63,7 +63,7 @@ const userSchema = new mongoose.Schema(
       },
     ],
   },
-  { timeStamp: true }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model('User', userSchema);

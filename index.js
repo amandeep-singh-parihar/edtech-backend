@@ -1,0 +1,59 @@
+require('dotenv').config(); // Load environment variables early
+
+const express = require('express');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const fileUpload = require('express-fileupload');
+
+// Initialize Express app
+const app = express();
+
+// Database connection
+require('./config/database').dbConnect();
+
+// Middleware
+app.use(express.json()); // Parses incoming JSON requests
+app.use(cookieParser()); // Parses cookies
+
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+);
+
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/',
+  })
+);
+
+// Cloudinary configuration
+const { cloudinaryConnect } = require('./config/cloudinary');
+cloudinaryConnect();
+
+// Routes
+const userRoutes = require('./routes/User.route');
+const profileRoutes = require('./routes/Profile.route');
+const paymentRoutes = require('./routes/Payment.route');
+const courseRoutes = require('./routes/Course.route');
+
+app.use('/api/v1/auth', userRoutes);
+app.use('/api/v1/profile', profileRoutes);
+app.use('/api/v1/payment', paymentRoutes);
+app.use('/api/v1/course', courseRoutes);
+
+// Default route
+app.get('/', (req, res) => {
+  return res.json({
+    success: true,
+    message: 'Your server is up and running',
+  });
+});
+
+// Start server
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`App is listening on PORT: ${PORT}`);
+});

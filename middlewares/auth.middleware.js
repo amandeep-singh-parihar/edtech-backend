@@ -19,15 +19,20 @@ exports.auth = async (req, res, next) => {
 
     //verify the token
     try {
-      const decode = jwt.decode(token, process.env.JWT_SCREAT);
-      console.log(decode);
+      const decode = jwt.verify(token, process.env.JWT_SCREAT);
+      console.log('Decoded Token: ', decode);
       req.user = decode;
     } catch (error) {
       return res.status(401).json({
         success: false,
-        message: 'token is invalid',
+        message: 'Token is invalid',
       });
     }
+
+    //DEbug
+    console.log('Token received: ', token);
+    //Debug
+
     next();
   } catch (error) {
     return res.status(401).json({
@@ -38,7 +43,7 @@ exports.auth = async (req, res, next) => {
 };
 
 // isstudent
-exports.isStudent = async (req, res) => {
+exports.isStudent = async (req, res, next) => {
   try {
     if (req.user.accountType !== 'Student') {
       return res.status(401).json({
@@ -56,12 +61,12 @@ exports.isStudent = async (req, res) => {
 };
 
 //isInstructor
-exports.isInstructor = async (req, res) => {
+exports.isInstructor = async (req, res, next) => {
   try {
-    if (req.user.accountType !== 'Admin') {
+    if (req.user.accountType !== 'Instructor') {
       return res.status(401).json({
         success: false,
-        message: 'This is a protect route for Admin only',
+        message: 'This is a protected route for Instructor only',
       });
     }
     next();
@@ -74,19 +79,23 @@ exports.isInstructor = async (req, res) => {
 };
 
 //is Admin
-exports.isAdmin = async (req, res) => {
+exports.isAdmin = async (req, res, next) => {
   try {
-    if (req.user.accountType !== 'Instructor') {
+    //Debug
+    console.log('Priting Account Type : ', req.user.accountType);
+
+    if (req.user.accountType !== 'Admin') {
       return res.status(401).json({
         success: false,
-        message: 'This is a protect route for Instructor only',
+        message: 'This is a protected route for Admin only',
       });
     }
+
     next();
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: 'User role cannot be verified, please try again',
+      message: 'User role cannot 111 be verified, please try again',
     });
   }
 };

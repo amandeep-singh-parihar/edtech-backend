@@ -1,5 +1,7 @@
 const Profile = require('../models/Profile.model');
 const User = require('../models/User.model');
+const { uploadImageToCloudinary } = require('../utils/imageUploader.util');
+require('dotenv').config();
 // profile details is already there as we marked them null so don't need to create it just update it with real data
 exports.updateProfile = async (req, res) => {
   try {
@@ -130,7 +132,7 @@ exports.getAllUserDetails = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'User data fetched successfully',
-      data:userDetails,
+      data: userDetails,
     });
   } catch (error) {
     console.log(error);
@@ -141,36 +143,79 @@ exports.getAllUserDetails = async (req, res) => {
   }
 };
 
-//update display picture -> ****incomplete*****
+// function to check the supported type
+function isFileTypeSupported(type, supportedType) {
+  return supportedType.includes(type);
+}
+
+// Update Profile Picture
 exports.updateDisplayPicture = async (req, res) => {
-  // fetch data
-  const token =
-    req.cookies.token ||
-    req.body.token ||
-    req.header('Authorization').replace('Bearer', '');
-
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: 'Token missing !',
-    });
-  }
-
   try {
-    const decode = jwt.decode(token, process.env.JWT_SCREAT);
-    console.log(decode);
+    // Fetch the user id
+    const userId = req.user.id;
+    // Validation
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'User Id is empty!!!',
+      });
+    }
+    // Fetch the Profile Picture
+    const displayPicture = req.files.displayPicture;
+    // Validation
+    if (!displayPicture) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a profile picture',
+      });
+    }
+
+    // Check for supported Type
+    const supportedType = ['jpg', 'jpeg', 'png'];
+    const imageType = displayPicture.name.split('.')[1].toLowerCase();
+
+    if (!isFileTypeSupported(imageType, supportedType)) {
+      return res.status(400).json({
+        success: false,
+        message: 'File format not supported',
+      });
+    }
+    // Upload image to Cloudinary
+    const result = await uploadImageToCloudinary(
+      displayPicture,
+      process.env.FOLDER_NAME
+    );
+
+    // Update the profile picture
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { image: result.secure_url },
+      { new: true }
+    );
+
+    // Return the response
+    return res.status(200).json({
+      success: true,
+      message: 'Profile Picture Updated Successfully',
+      data: updatedUser,
+    });
   } catch (error) {
-    return res.status(401).json({
+    return res.status(500).json({
       success: false,
-      message: 'token is invalid',
+      message: 'Error updating profile picture',
+      error: error.message,
     });
   }
-
-  // const {}
-  // fetch the image
-  // fetch the user
-  // validate all
-  // supported type
-  // save the entry in the database
 };
-// get enrolled courses
+// get enrolled courses -> incomplete
+exports.getEnrolledCourses = async (req, res) => {
+  try {
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error while fetching enrolled courses',
+      error: error.message,
+    });
+  }
+};

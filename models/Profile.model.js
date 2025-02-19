@@ -17,7 +17,7 @@ const profileSchema = new mongoose.Schema(
       trim: true,
     },
   },
-  { timeStamp: true }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model('Profile', profileSchema);

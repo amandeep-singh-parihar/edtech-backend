@@ -48,6 +48,9 @@ const {
 /******************************************************course routes***************************************/
 /******************************************************course routes***************************************/
 
+// Get all courses
+router.get('/getAllCourses', auth, getAllCourses);
+
 //course can only created by instructor
 router.post('/createCourse', auth, isInstructor, createCourse);
 

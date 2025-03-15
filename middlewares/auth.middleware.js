@@ -8,7 +8,7 @@ exports.auth = async (req, res, next) => {
     const token =
       req.cookies.token ||
       req.body.token ||
-      req.header('Authorization').replace('Bearer', '');
+      req.get('Authorization')?.replace('Bearer ', '').trim();
 
     if (!token) {
       return res.status(401).json({
@@ -19,13 +19,15 @@ exports.auth = async (req, res, next) => {
 
     //verify the token
     try {
-      const decode = jwt.verify(token, process.env.JWT_SCREAT);
+      const decode = jwt.verify(token, process.env.JWT_SECRET);
       console.log('Decoded Token: ', decode);
       req.user = decode;
     } catch (error) {
+      console.error('JWT Verification Error: ', error.message);
       return res.status(401).json({
         success: false,
-        message: 'Token is invalid',
+        message: 'Token is invalid or expired',
+        error: error.message,
       });
     }
 

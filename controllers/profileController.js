@@ -5,30 +5,25 @@ require('dotenv').config();
 // profile details is already there as we marked them null so don't need to create it just update it with real data
 exports.updateProfile = async (req, res) => {
   try {
-    // fetch data
-    const { gender, dateOfBirth, about, contactNumber } = req.body;
+    // Fetch data
+    const { firstName, lastName, gender, dateOfBirth, about, contactNumber } = req.body;
 
-    //Debug
-    console.log('Request Body:', req.body); // Log the body to ensure the data is correct
-    // get user id
+    // Get user id
     const userId = req.user.id;
 
-    //Debug
-    console.log('Request Body:', req.body); // Log the body to ensure the data is correct
-
-    // log for debugging
+    // Debug logs
     console.log('Request Body:', req.body);
     console.log('User ID:', userId);
 
-    // validation
+    // Validation
     if (!gender || !contactNumber || !userId) {
       return res.status(400).json({
         success: false,
-        message: 'All fields are required',
+        message: 'Gender, contact number, and user ID are required',
       });
     }
 
-    // find profile and update
+    // Find the user
     const userDetails = await User.findById(userId);
     if (!userDetails) {
       return res.status(404).json({
@@ -36,7 +31,8 @@ exports.updateProfile = async (req, res) => {
         message: 'User not found',
       });
     }
-    // Get the profile ID from the user's details
+
+    // Get profile ID from user and validate it
     const profileId = userDetails.additionalDetails;
     if (!profileId) {
       return res.status(404).json({
@@ -54,30 +50,38 @@ exports.updateProfile = async (req, res) => {
       });
     }
 
-    //update profile
+    // Update profile details
     profileDetails.dateOfBirth = dateOfBirth;
     profileDetails.about = about;
     profileDetails.gender = gender;
     profileDetails.contactNumber = contactNumber;
 
-    //Debugging
-    console.log('Profile Details before save:', profileDetails);
-
+    // Save updated profile
     await profileDetails.save();
 
-    await profileDetails.save();
+    // Update firstName and lastName in User model
+    if (firstName) userDetails.firstName = firstName;
+    if (lastName) userDetails.lastName = lastName;
 
-    // return res
+    // Save updated user
+    await userDetails.save();
+
+    // Populate updated user with profile data
+    const updatedUserDetails = await User.findById(userId).populate("additionalDetails");
+
+    // Return response
     res.status(200).json({
       success: true,
-      message: 'Profile Updated successfully',
-      data: profileDetails,
+      message: 'Profile updated successfully',
+      data: updatedUserDetails,
     });
+
   } catch (error) {
-    console.log('Error Details : ', error);
+    console.error('Error Details:', error);
     res.status(500).json({
       success: false,
       message: 'Error while updating profile',
+      error: error.message,
     });
   }
 };

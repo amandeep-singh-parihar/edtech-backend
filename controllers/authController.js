@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const Profile = require('../models/Profile.model');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const mailSender = require("../utils/mailSender.util.js")
 
 exports.sendOtp = async (req, res) => {
   try {
@@ -58,6 +59,8 @@ exports.sendOtp = async (req, res) => {
 
 //signup
 exports.signup = async (req, res) => {
+  console.log('Incoming Request Body: ', req.body);
+
   try {
     const {
       firstName,
@@ -75,7 +78,6 @@ exports.signup = async (req, res) => {
       !firstName ||
       !lastName ||
       !email ||
-      !contactNumber ||
       !password ||
       !confirmPassword ||
       !accountType ||
@@ -202,7 +204,7 @@ exports.login = async (req, res) => {
         accountType: user.accountType,
       };
 
-      const token = jwt.sign(payload, process.env.JWT_SCREAT, {
+      const token =  jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: '2h',
       });
 
@@ -240,71 +242,82 @@ exports.login = async (req, res) => {
 // change password
 exports.changePassword = async (req, res) => {
   try {
-    //get data from the body
-    const { email, password, newPassword, confirmNewPassword } = req.body;
-    if (!email) {
-      return res.status(500).json({
+    const { password, newPassword, confirmNewPassword } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({
         success: false,
-        message: 'email must not be empty',
-      });
-    }
-    const user_existed = await User.findOne({ email });
-    if (!user_existed) {
-      return res.status(400).json({
-        success: false,
-        message: 'No user exited with this email',
-      });
-    }
-    //get old passwrod , newpassword, confirm new password
-    //validation
-    if (!password) {
-      return res.status(500).json({
-        success: false,
-        message: 'Old password must not be empty',
-      });
-    }
-    const old_password = await bcrypt.compare(password, user_existed.password);
-    if (!old_password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Wrong password',
+        message: 'Unauthorized: No token provided.',
       });
     }
 
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized: Invalid or expired token.',
+      });
+    }
+
+    const email = decoded.email;
+
+    // Validate input fields
+    if (!password || !newPassword || !confirmNewPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'All fields (password, newPassword, confirmNewPassword) are required.',
+      });
+    }
+
+    // Check if the user exists
+    const user_existed = await User.findOne({ email });
+    if (!user_existed) {
+      return res.status(404).json({
+        success: false,
+        message: 'No user exists with this email.',
+      });
+    }
+
+    // Verify old password
+    const isOldPasswordValid = await bcrypt.compare(password, user_existed.password);
+    if (!isOldPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Incorrect current password.',
+      });
+    }
+
+    // Check if new passwords match
     if (newPassword !== confirmNewPassword) {
       return res.status(400).json({
         success: false,
-        message: 'Newpassword and confirmPassword must be same',
+        message: 'New password and confirm password must match.',
       });
     }
 
-    //update the password
-    let hashed_password;
-    try {
-      hashed_password = await bcrypt.hash(newPassword, 10);
-    } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: 'Error in hasing the password',
-      });
-    }
-    const response = await User.findOneAndUpdate(
-      { email },
-      { password: hashed_password },
-      { new: true }
-    );
-    //send mail= password updated
-    await mailSender(email, `Password Changed successfully`);
-    //return response
-    res.status(200).json({
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password in the database
+    await User.findOneAndUpdate({ email }, { password: hashedPassword });
+
+    // Send confirmation email
+    await mailSender(email, 'Password changed successfully.');
+
+    // Send success response
+    return res.status(200).json({
       success: true,
-      message: 'Password Changed successfully',
+      message: 'Password changed successfully.',
     });
+
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
+    console.error("Error while changing password: ", error);
+    return res.status(500).json({
       success: false,
-      message: 'Error is Changing password',
+      message: 'Internal server error while changing password.',
     });
   }
 };

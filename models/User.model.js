@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
     },
     contactNumber: {
       type: Number,
-      required: true,
+      // required: true,
       trim: true,
     },
     password: {

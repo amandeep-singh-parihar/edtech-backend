@@ -1,5 +1,5 @@
-const RatingAndReview = require('../models/RatingAndReviews.model');
-const Course = require('../models/Course.model');
+const RatingAndReview = require("../models/RatingAndReviews.model.js")
+const Course = require('../models/Course.model.js');
 
 // create rating
 exports.createRating = async (req, res) => {
@@ -26,6 +26,7 @@ exports.createRating = async (req, res) => {
     //   });
     // }
 
+    
     //Check if the User enrolled in the course (more efficient if the whole course details is not required)
     const courseDetails = await Course.findOne({
       _id: courseId,
@@ -63,7 +64,7 @@ exports.createRating = async (req, res) => {
 
     // update the course with the rating and review
     const updatedCourseDetails = await Course.findByIdAndUpdate(
-      courseId,
+      {_id:courseId},
       {
         $push: {
           ratingAndreviews: rating_and_review._id,
@@ -78,6 +79,7 @@ exports.createRating = async (req, res) => {
       message: 'Rating and review created',
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       success: false,
       message: 'Error while creating review',

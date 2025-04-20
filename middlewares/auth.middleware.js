@@ -6,14 +6,14 @@ require('dotenv').config();
 exports.auth = async (req, res, next) => {
   try {
     const token =
-      req.cookies.token ||
-      req.body.token ||
+      req.cookies?.token ||
+      req.body?.token ||
       req.get('Authorization')?.replace('Bearer ', '').trim();
 
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'Token missing !',
+        message: 'Access denied. No token provided.',
       });
     }
 
@@ -26,7 +26,7 @@ exports.auth = async (req, res, next) => {
       console.error('JWT Verification Error: ', error.message);
       return res.status(401).json({
         success: false,
-        message: 'Token is invalid or expired',
+        message: 'Invalid or expired token.',
         error: error.message,
       });
     }
@@ -37,9 +37,10 @@ exports.auth = async (req, res, next) => {
 
     next();
   } catch (error) {
+    console.error('Auth Middleware Error:', error);
     return res.status(401).json({
       success: false,
-      error: 'Something went wrong, while verifying the token',
+      error: 'Internal server error during authentication.',
     });
   }
 };

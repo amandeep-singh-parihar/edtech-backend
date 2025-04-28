@@ -7,13 +7,13 @@ const {
   deleteAccount,
   updateProfile,
   getAllUserDetails,
-  updateDisplayPicture
+  updateDisplayPicture,
 } = require('../controllers/profileController');
 
 //profile routes
 
 //Delete user Account
-router.delete('/deleteProfile',auth, deleteAccount);
+router.delete('/deleteProfile', auth, deleteAccount);
 router.put('/updateProfile', auth, updateProfile);
 router.get('/getuserdetails', auth, getAllUserDetails);
 

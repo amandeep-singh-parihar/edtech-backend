@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 // reset password token
 exports.resetPasswordToken = async (req, res) => {
   try {
-    console.log("Received body:", req.body);
+    console.log('Received body:', req.body);
     // get the email from the req,body
     const { email } = req.body;
     // check user for this email,email verification
@@ -60,55 +60,57 @@ exports.resetPasswordToken = async (req, res) => {
 };
 
 //reset password
-exports.resetPassword = async (req,res) => {
-
+exports.resetPassword = async (req, res) => {
   try {
-      const {token, password, confirmPassword} = req.body;     
+    const { token, password, confirmPassword } = req.body;
 
-      if(!token||!password||!confirmPassword){
-          return res.status(400).json({
-              success:false,
-              message:"Enter all details"
-          })
-      }
+    if (!token || !password || !confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Enter all details',
+      });
+    }
 
-      const existingUser = await User.findOne({token:token});
-      if(!existingUser) {
-          return res.json({
-              success:false,
-              message:'Token is invalid',
-          });
-      }
+    const existingUser = await User.findOne({ token: token });
+    if (!existingUser) {
+      return res.json({
+        success: false,
+        message: 'Token is invalid',
+      });
+    }
 
-      if(existingUser.resetPasswordExpires<Date.now()){
-          return res.status(500).json({
-              success:false,
-              message:"Token is no longer valid"
-          })
-      }
-
-      if (password!==confirmPassword) {
-          return res.status(500).json({
-              success:false,
-              message:"Password Don't match"
-          })
-      }
-
-      const hashedPwd = await bcrypt.hash(password, 10);
-      const updatedUser = await User.findOneAndUpdate({token},{
-          password:hashedPwd
-      },{new:true})
-      console.log("Updated user after password change is", updatedUser)
-      return res.status(200).json({
-          success:true,
-          message:"Password Changed successfully"
-      })
-
-  } catch (error) {
-      console.log(error);
+    if (existingUser.resetPasswordExpires < Date.now()) {
       return res.status(500).json({
-          success:false,
-          message:'Something went wrong while reseting password'
-      })
+        success: false,
+        message: 'Token is no longer valid',
+      });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(500).json({
+        success: false,
+        message: "Password Don't match",
+      });
+    }
+
+    const hashedPwd = await bcrypt.hash(password, 10);
+    const updatedUser = await User.findOneAndUpdate(
+      { token },
+      {
+        password: hashedPwd,
+      },
+      { new: true }
+    );
+    console.log('Updated user after password change is', updatedUser);
+    return res.status(200).json({
+      success: true,
+      message: 'Password Changed successfully',
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Something went wrong while reseting password',
+    });
   }
-}
+};

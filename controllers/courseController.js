@@ -26,10 +26,8 @@ exports.createCourse = async (req, res) => {
     //get thumbnail
     const thumbnail = req.files?.thumbnail;
 
-
-    console.log("Request Body: ", req.body);
-console.log("Request Files: ", req.files);
-
+    console.log('Request Body: ', req.body);
+    console.log('Request Files: ', req.files);
 
     // validation
     if (
@@ -83,7 +81,7 @@ console.log("Request Files: ", req.files);
       description: courseDescription,
       whatYouWillLearn,
       price,
-      thumbnail:uploaded_thumbnail.secure_url,
+      thumbnail: uploaded_thumbnail.secure_url,
       category,
       instructor: instructorId,
       tags,
@@ -123,11 +121,11 @@ console.log("Request Files: ", req.files);
       data: newCourse,
     });
   } catch (error) {
-    console.error("Error while creating course: ", error);
+    console.error('Error while creating course: ', error);
     res.status(500).json({
       success: false,
       message: 'Error while creating course',
-      error:error.message,
+      error: error.message,
     });
   }
 };

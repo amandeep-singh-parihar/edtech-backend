@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const Profile = require('../models/Profile.model');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const mailSender = require("../utils/mailSender.util.js")
+const mailSender = require('../utils/mailSender.util.js');
 
 exports.sendOtp = async (req, res) => {
   try {
@@ -204,7 +204,7 @@ exports.login = async (req, res) => {
         accountType: user.accountType,
       };
 
-      const token =  jwt.sign(payload, process.env.JWT_SECRET, {
+      const token = jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: '2h',
       });
 
@@ -243,7 +243,7 @@ exports.login = async (req, res) => {
 exports.changePassword = async (req, res) => {
   try {
     const { password, newPassword, confirmNewPassword } = req.body;
-    const token = req.headers.authorization?.split(" ")[1];
+    const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
       return res.status(401).json({
@@ -268,7 +268,8 @@ exports.changePassword = async (req, res) => {
     if (!password || !newPassword || !confirmNewPassword) {
       return res.status(400).json({
         success: false,
-        message: 'All fields (password, newPassword, confirmNewPassword) are required.',
+        message:
+          'All fields (password, newPassword, confirmNewPassword) are required.',
       });
     }
 
@@ -282,7 +283,10 @@ exports.changePassword = async (req, res) => {
     }
 
     // Verify old password
-    const isOldPasswordValid = await bcrypt.compare(password, user_existed.password);
+    const isOldPasswordValid = await bcrypt.compare(
+      password,
+      user_existed.password
+    );
     if (!isOldPasswordValid) {
       return res.status(401).json({
         success: false,
@@ -312,9 +316,8 @@ exports.changePassword = async (req, res) => {
       success: true,
       message: 'Password changed successfully.',
     });
-
   } catch (error) {
-    console.error("Error while changing password: ", error);
+    console.error('Error while changing password: ', error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error while changing password.',

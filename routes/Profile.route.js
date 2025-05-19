@@ -4,21 +4,23 @@ const { auth } = require('../middlewares/auth.middleware');
 
 // import the controllers
 const {
-  deleteAccount,
   updateProfile,
+  deleteAccount,
   getAllUserDetails,
   updateDisplayPicture,
-} = require('../controllers/profileController');
+  getEnrolledCourses,
+  instructorDashboard,
+} = require('../controllers/profileController.js');
 
-//profile routes
+//profile route
 
 //Delete user Account
 router.delete('/deleteProfile', auth, deleteAccount);
 router.put('/updateProfile', auth, updateProfile);
-router.get('/getuserdetails', auth, getAllUserDetails);
+router.get('/getAllUserDetails', auth, getAllUserDetails);
 
 //Get Enroller Courses
-// router.get("/getEnrolledCourses",auth,getEn)
+router.get("/getEnrolledCourses",auth,getEnrolledCourses)
 router.put('/updateDisplayPicture', auth, updateDisplayPicture);
 
 module.exports = router;

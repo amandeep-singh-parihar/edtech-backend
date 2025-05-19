@@ -15,7 +15,7 @@ exports.createCourse = async (req, res) => {
     const {
       courseName,
       courseDescription,
-      whatYouWillLearn,
+      whatWillYouLearn,
       price,
       category,
       tags,
@@ -36,7 +36,7 @@ exports.createCourse = async (req, res) => {
       !courseDescription ||
       !price ||
       !category ||
-      !whatYouWillLearn ||
+      !whatWillYouLearn ||
       !instructions ||
       !status ||
       !tags
@@ -46,6 +46,67 @@ exports.createCourse = async (req, res) => {
         message: 'All fields are required',
       });
     }
+
+    // Debug Debug Debug DebugDebugDebugDebugDebugDebugDebugDebugDebugDebugDebugDebug
+    // if (!thumbnail) {
+    //   return res.status(400).json({
+    //     succes: false,
+    //     message: 'Thumbnail is required',
+    //   });
+    // }
+
+    // if (!courseName) {
+    //   return res.status(400).json({
+    //     succes: false,
+    //     message: 'courseName is required',
+    //   });
+    // }
+    // if (!courseDescription) {
+    //   return res.status(400).json({
+    //     succes: false,
+    //     message: 'courseDescription is required',
+    //   });
+    // }
+    // if (!price) {
+    //   return res.status(400).json({
+    //     succes: false,
+    //     message: 'price is required',
+    //   });
+    // }
+
+    // if (!category) {
+    //   return res.status(400).json({
+    //     succes: false,
+    //     message: 'category is required',
+    //   });
+    // }
+
+    // if (!whatWillYouLearn) {
+    //   return res.status(400).json({
+    //     succes: false,
+    //     message: 'whatWillYouLearn is required',
+    //   });
+    // }
+
+    // if (!instructions) {
+    //   return res.status(400).json({
+    //     succes: false,
+    //     message: 'instructions is required',
+    //   });
+    // }
+    // if (!status) {
+    //   return res.status(400).json({
+    //     succes: false,
+    //     message: 'status is required',
+    //   });
+    // }
+    // if (!tags) {
+    //   return res.status(400).json({
+    //     succes: false,
+    //     message: 'tags is required',
+    //   });
+    // }
+    // Debug Debug Debug DebugDebugDebugDebugDebugDebugDebugDebugDebugDebugDebugDebug
 
     // need instructor details
     const instructorId = req.user.id;
@@ -79,7 +140,7 @@ exports.createCourse = async (req, res) => {
     const newCourse = await Course.create({
       courseName,
       description: courseDescription,
-      whatYouWillLearn,
+      whatWillYouLearn,
       price,
       thumbnail: uploaded_thumbnail.secure_url,
       category,
@@ -104,10 +165,6 @@ exports.createCourse = async (req, res) => {
     await Category.findByIdAndUpdate(
       category,
       {
-        $set: {
-          name: courseName,
-          description: courseDescription,
-        },
         $push: {
           courses: newCourse._id,
         },

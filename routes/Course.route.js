@@ -44,6 +44,10 @@ const {
   getAllRating,
 } = require('../controllers/ratingAndreviewController.js');
 
+// contactus controller
+
+const { contactus } = require('../controllers/contactUsController.js');
+
 // importing middlware
 const {
   auth,
@@ -96,5 +100,9 @@ router.post('/createRating', auth, isStudent, createRating);
 
 router.get('/getAverageRating', getAverageRating);
 router.get('/getReviews', getAllRating);
+
+/* ************************************************* Contact Us********************** */
+/* ************************************************* Contact Us********************** */
+router.post('/contactUs', contactus);
 
 module.exports = router;

@@ -1,11 +1,11 @@
 //sentotp
+require('dotenv').config();
 const OTP = require('../models/OTP.model');
 const User = require('../models/User.model');
 const otpGenerator = require('otp-generator');
 const bcrypt = require('bcrypt');
 const Profile = require('../models/Profile.model');
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
 const mailSender = require('../utils/mailSender.util.js');
 
 exports.sendOtp = async (req, res) => {

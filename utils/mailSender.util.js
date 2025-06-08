@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const mailSender = async (email, title, body) => {
   try {
-    let transpoter = nodemailer.createTransport({
+    let transporter = nodemailer.createTransport({
       host: process.env.MAIL_HOST,
       auth: {
         user: process.env.MAIL_USER,
@@ -11,16 +11,18 @@ const mailSender = async (email, title, body) => {
       },
     });
 
-    let info = transpoter.sendMail({
+    let info = await transporter.sendMail({
       from: 'StudyNotion by Amandeep',
       to: `${email}`,
       subject: `${title}`,
       html: `${body}`,
     });
-    console.log(info);
+
+    console.log('Email sent: ', info.response);
     return info;
   } catch (error) {
-    console.log(error);
+    console.log('Error while sending email:', error);
+    throw error;
   }
 };
 

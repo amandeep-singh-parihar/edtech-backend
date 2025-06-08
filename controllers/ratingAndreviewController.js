@@ -1,4 +1,4 @@
-const RatingAndReview = require('../models/RatingAndReviews.model.js');
+const RatingAndReview = require('../models/ratingAndreviews.model.js');
 const Course = require('../models/Course.model.js');
 
 // create rating

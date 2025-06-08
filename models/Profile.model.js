@@ -7,7 +7,6 @@ const profileSchema = new mongoose.Schema(
     },
     dateOfBirth: {
       type: String,
-      default: null,
     },
     about: {
       type: String,
@@ -15,7 +14,6 @@ const profileSchema = new mongoose.Schema(
     },
     contactNumber: {
       type: String,
-      trim: true,
     },
   },
   { timestamps: true }

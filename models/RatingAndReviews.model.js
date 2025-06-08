@@ -19,11 +19,10 @@ const RatingAndReviewsSchema = new mongoose.Schema(
     review: {
       type: String,
       required: true,
-
       trim: true,
     },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('RatingAndReview', RatingAndReviewsSchema);
+module.exports = mongoose.model('ratingAndreview', RatingAndReviewsSchema);

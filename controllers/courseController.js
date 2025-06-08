@@ -139,7 +139,7 @@ exports.createCourse = async (req, res) => {
     // create an entry for new course
     const newCourse = await Course.create({
       courseName,
-      description: courseDescription,
+      courseDescription: courseDescription,
       whatWillYouLearn,
       price,
       thumbnail: uploaded_thumbnail.secure_url,
@@ -280,15 +280,21 @@ exports.editCourse = async (req, res) => {
     const course = await Course.findById(courseId);
 
     if (!course) {
-      return res.status(404).json({
-        success: false,
-        error: 'Course not Found',
-      });
+      return res.status(404).json({ error: 'Course not found' });
     }
 
-    if (req.files?.thumbnail) {
+    if (req.files) {
       console.log('thumbnail update');
+
       const thumbnail = req.files.thumbnail;
+      // validation
+
+      // if(!thumbnail){
+      //   console.log("thumbnail is missing *****************************");
+      // }
+
+      // validation
+
       const thumbnailImage = await uploadImageToCloudinary(
         thumbnail,
         process.env.FOLDER_NAME
@@ -298,7 +304,16 @@ exports.editCourse = async (req, res) => {
 
     for (const key in updates) {
       if (updates.hasOwnProperty(key)) {
-        course[key] = updates[key];
+        if (
+          key === 'category' &&
+          typeof updates[key] === 'object' &&
+          updates[key] !== null &&
+          updates[key]._id
+        ) {
+          course[key] = updates[key]._id;
+        } else {
+          course[key] = updates[key];
+        }
       }
     }
 
@@ -314,7 +329,7 @@ exports.editCourse = async (req, res) => {
         },
       })
       .populate('category')
-      .populate('ratingAndReviews')
+      .populate('ratingAndreviews')
       .populate({
         path: 'courseContent',
         populate: {
@@ -352,7 +367,7 @@ exports.getFullCourseDetails = async (req, res) => {
         },
       })
       .populate('category')
-      .populate('ratingAndReviews')
+      .populate('ratingAndreviews')
       .populate({
         path: 'courseContent',
         populate: {

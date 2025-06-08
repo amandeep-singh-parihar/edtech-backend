@@ -1,6 +1,8 @@
 const Category = require('../models/Category.model');
 const Course = require('../models/Course.model');
-
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
 // category handler function
 exports.createCategory = async (req, res) => {
   //debug
@@ -63,6 +65,7 @@ exports.categoryPageDetails = async (req, res) => {
   try {
     // get category id
     const { categoryId } = req.body;
+
     if (!categoryId) {
       return res.status(400).json({
         success: false,
@@ -71,8 +74,13 @@ exports.categoryPageDetails = async (req, res) => {
     }
     // get courses for specific category id
     const selectedCategory = await Category.findById(categoryId)
-      .populate('courses')
+      .populate({
+        path: 'courses',
+        match: { status: 'Published' },
+        populate: 'ratingAndreviews',
+      })
       .exec();
+
     // validation
     if (!selectedCategory) {
       return res.status(404).json({
@@ -80,31 +88,52 @@ exports.categoryPageDetails = async (req, res) => {
         message: 'Date not found',
       });
     }
+
+    if (selectedCategory.courses.length === 0) {
+      console.log('No courses found for the selected category.');
+      return res.status(404).json({
+        success: false,
+        message: 'No courses found for the selected category',
+      });
+    }
+
+    const categoriesExceptSeleted = await Category.find({
+      _id: { $ne: categoryId },
+    });
+
     // get courses for different courses
-    const differentCategories = await Category.find({
-      _id: { $ne: categoryId }, // where the id is not equal to categoryId
+    const differentCategory = await Category.findOne({
+      _id: categoriesExceptSeleted[getRandomInt(categoriesExceptSeleted.length)]
+        ._id,
     })
-      .populate('courses')
+      .populate({
+        path: 'courses',
+        match: { status: 'Published' },
+      })
       .exec();
 
-    //get top 10 selling courses
-    // get top selling courses (incomplete)
-    const { courseId } = req.body; // take the courseId
-    const top_selling = await Course.aggregate([
-      { $match: { _id: new mongoose.Types.ObjectId(courseId) } },
-      { $project: { studentCount: { $size: '$studentsEnrolled' } } },
-    ]);
+    const allCategories = await Category.find()
+      .populate({
+        path: 'courses',
+        match: { status: 'Published' },
+        populate: {
+          path: 'instructor',
+        },
+      })
+      .exec();
 
-    // const top_selling_ = await Course.findOne({ _id: courseId });
-    // const count = top_selling_.studentsEnrolled.length;
-    // console.log(top_selling_);
+    const allCourses = allCategories.flatMap((category) => category.courses);
+    const mostSellingCourses = allCourses
+      .sort((a, b) => b.sold - a.sold)
+      .slice(0, 10);
 
     // return response
     res.status(200).json({
       success: true,
       data: {
         selectedCategory,
-        differentCategories,
+        differentCategory,
+        mostSellingCourses,
       },
     });
   } catch (error) {

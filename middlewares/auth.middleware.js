@@ -32,7 +32,7 @@ exports.auth = async (req, res, next) => {
     }
 
     //DEbug
-    console.log('Token received: ', token);
+    // console.log('Token received: ', token);
     //Debug
 
     next();
@@ -85,7 +85,7 @@ exports.isInstructor = async (req, res, next) => {
 exports.isAdmin = async (req, res, next) => {
   try {
     //Debug
-    console.log('Priting Account Type : ', req.user.accountType);
+    // console.log('Priting Account Type : ', req.user.accountType);
 
     if (req.user.accountType !== 'Admin') {
       return res.status(401).json({

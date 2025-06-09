@@ -6,7 +6,7 @@ function getRandomInt(max) {
 // category handler function
 exports.createCategory = async (req, res) => {
   //debug
-  console.log('User is Admin', req.user.accountType === 'Admin');
+  // console.log('User is Admin', req.user.accountType === 'Admin');
 
   try {
     //fetch data

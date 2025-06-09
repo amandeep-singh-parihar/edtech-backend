@@ -16,8 +16,8 @@ exports.updateProfile = async (req, res) => {
     const userId = req.user.id;
 
     // Debug logs
-    console.log('Request Body:', req.body);
-    console.log('User ID:', userId);
+    // console.log('Request Body:', req.body);
+    // console.log('User ID:', userId);
 
     // Validation
     if (!gender || !contactNumber || !userId) {

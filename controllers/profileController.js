@@ -20,10 +20,10 @@ exports.updateProfile = async (req, res) => {
     // console.log('User ID:', userId);
 
     // Validation
-    if (!gender || !contactNumber || !userId) {
+    if (!gender || !contactNumber) {
       return res.status(400).json({
         success: false,
-        message: 'Gender, contact number, and user ID are required',
+        message: 'All fields are required !',
       });
     }
 
@@ -157,64 +157,94 @@ function isFileTypeSupported(type, supportedType) {
 }
 
 // Update Profile Picture
+// exports.updateDisplayPicture = async (req, res) => {
+//   try {
+//     // Fetch the user id
+//     const userId = req.user.id;
+//     // Validation
+//     if (!userId) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'User Id is empty!!!',
+//       });
+//     }
+//     // Fetch the Profile Picture
+//     const displayPicture = req.files.displayPicture;
+//     // Validation
+//     if (!displayPicture) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Please provide a profile picture',
+//       });
+//     }
+
+//     // Check for supported Type
+//     const supportedType = ['jpg', 'jpeg', 'png'];
+//     const imageType = displayPicture.name.split('.')[1].toLowerCase();
+
+//     if (!isFileTypeSupported(imageType, supportedType)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'File format not supported',
+//       });
+//     }
+//     // Upload image to Cloudinary
+//     const result = await uploadImageToCloudinary(
+//       displayPicture,
+//       process.env.FOLDER_NAME
+//     );
+
+//     // Update the profile picture
+//     const updatedUser = await User.findByIdAndUpdate(
+//       userId,
+//       { image: result.secure_url },
+//       { new: true }
+//     );
+
+//     // Return the response
+//     return res.status(200).json({
+//       success: true,
+//       message: 'Profile Picture Updated Successfully',
+//       data: updatedUser,
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       message: 'Error updating profile picture',
+//       error: error.message,
+//     });
+//   }
+// };
+
 exports.updateDisplayPicture = async (req, res) => {
-  try {
-    // Fetch the user id
-    const userId = req.user.id;
-    // Validation
-    if (!userId) {
-      return res.status(400).json({
-        success: false,
-        message: 'User Id is empty!!!',
-      });
-    }
-    // Fetch the Profile Picture
-    const displayPicture = req.files.displayPicture;
-    // Validation
-    if (!displayPicture) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide a profile picture',
-      });
-    }
-
-    // Check for supported Type
-    const supportedType = ['jpg', 'jpeg', 'png'];
-    const imageType = displayPicture.name.split('.')[1].toLowerCase();
-
-    if (!isFileTypeSupported(imageType, supportedType)) {
-      return res.status(400).json({
-        success: false,
-        message: 'File format not supported',
-      });
-    }
-    // Upload image to Cloudinary
-    const result = await uploadImageToCloudinary(
-      displayPicture,
-      process.env.FOLDER_NAME
-    );
-
-    // Update the profile picture
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { image: result.secure_url },
-      { new: true }
-    );
-
-    // Return the response
-    return res.status(200).json({
-      success: true,
-      message: 'Profile Picture Updated Successfully',
-      data: updatedUser,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: 'Error updating profile picture',
-      error: error.message,
-    });
-  }
+	try {
+		const displayPicture = req.files.displayPicture;
+		const userId = req.user.id;
+		const image = await uploadImageToCloudinary(
+			displayPicture,
+			process.env.FOLDER_NAME,
+			1000,
+			1000,
+		);
+		console.log(image);
+		const updatedProfile = await User.findByIdAndUpdate(
+			{ _id: userId },
+			{ image: image.secure_url },
+			{ new: true },
+		);
+		res.send({
+			success: true,
+			message: `Image Updated successfully`,
+			data: updatedProfile,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
 };
+
 // get enrolled courses
 exports.getEnrolledCourses = async (req, res) => {
   try {

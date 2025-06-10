@@ -39,11 +39,13 @@ const userRoutes = require('./routes/User.route');
 const profileRoutes = require('./routes/Profile.route');
 const paymentRoutes = require('./routes/Payment.route');
 const courseRoutes = require('./routes/Course.route');
+const contactUs = require('./routes/ContactUs.route.js');
 
 app.use('/api/v1/auth', userRoutes);
 app.use('/api/v1/profile', profileRoutes);
 app.use('/api/v1/payment', paymentRoutes);
 app.use('/api/v1/course', courseRoutes);
+app.use('/api/v1',contactUs);
 
 // Default route
 app.get('/', (req, res) => {

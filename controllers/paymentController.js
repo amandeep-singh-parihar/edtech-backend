@@ -75,7 +75,6 @@ exports.capturePayment = async (req, res) => {
   }
 };
 
-
 exports.verifyPayment = async (req, res) => {
   console.log('request in verifyPayment is', req);
   const razorpay_order_id = req.body?.razorpay_order_id;

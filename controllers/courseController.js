@@ -15,7 +15,7 @@ exports.createCourse = async (req, res) => {
     const {
       courseName,
       courseDescription,
-      whatWillYouLearn,
+      whatYouWillLearn,
       price,
       category,
       tags,
@@ -36,7 +36,7 @@ exports.createCourse = async (req, res) => {
       !courseDescription ||
       !price ||
       !category ||
-      !whatWillYouLearn ||
+      !whatYouWillLearn ||
       !instructions ||
       !status ||
       !tags
@@ -81,10 +81,10 @@ exports.createCourse = async (req, res) => {
     //   });
     // }
 
-    // if (!whatWillYouLearn) {
+    // if (!whatYouWillLearn) {
     //   return res.status(400).json({
     //     succes: false,
-    //     message: 'whatWillYouLearn is required',
+    //     message: 'whatYouWillLearn is required',
     //   });
     // }
 
@@ -140,7 +140,7 @@ exports.createCourse = async (req, res) => {
     const newCourse = await Course.create({
       courseName,
       courseDescription: courseDescription,
-      whatWillYouLearn,
+      whatYouWillLearn,
       price,
       thumbnail: uploaded_thumbnail.secure_url,
       category,
@@ -149,6 +149,12 @@ exports.createCourse = async (req, res) => {
       status,
       instructions,
     });
+
+    //
+    console.log('new course created===> ', newCourse);
+    console.log('Created At (newCourse):', newCourse.createdAt);
+
+    //
 
     // add the new course to the user shcema of Instructor
     await User.findByIdAndUpdate(
@@ -199,10 +205,17 @@ exports.getAllCourses = async (req, res) => {
         instructor: true,
         ratingAndreviews: true,
         studentsEnrolled: true,
+        createdAt: true,
       }
     )
       .populate('instructor')
       .exec();
+
+    //
+    allCourse.forEach((course) => {
+      console.log('Course ID:', course._id, 'Created At:', course.createdAt);
+    });
+    //
 
     return res.status(200).json({
       success: true,

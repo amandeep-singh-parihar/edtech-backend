@@ -204,6 +204,8 @@ exports.login = async (req, res) => {
         accountType: user.accountType,
       };
 
+      // syntax
+      // jwt.sign(payload, secretKey, options)
       const token = jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: '2h',
       });

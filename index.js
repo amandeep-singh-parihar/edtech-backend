@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
+const rateLimit = require('express-rate-limit');
 
 // Initialize Express app
 const app = express();
@@ -15,10 +16,27 @@ require('./config/database').dbConnect();
 app.use(express.json()); // Parses incoming JSON requests
 app.use(cookieParser()); // Parses cookies
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Too many requests, please try again after 15 minutes.',
+});
+app.use(limiter);
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://edtech-frontend-gamma.vercel.app',
+];
+
 app.use(
   cors({
-    // origin: 'http://localhost:3000',
-    origin: '*',
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );

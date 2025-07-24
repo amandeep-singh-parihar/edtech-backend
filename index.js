@@ -1,5 +1,4 @@
 require('dotenv').config(); // Load environment variables early
-
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');

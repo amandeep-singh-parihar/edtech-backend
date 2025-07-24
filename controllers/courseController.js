@@ -15,7 +15,7 @@ exports.createCourse = async (req, res) => {
     const {
       courseName,
       courseDescription,
-      whatYouWillLearn,
+      whatWillYouLearn,
       price,
       category,
       tags,
@@ -25,18 +25,35 @@ exports.createCourse = async (req, res) => {
 
     //get thumbnail
     const thumbnail = req.files?.thumbnail;
+    if (!thumbnail) {
+      return res.status(400).json({
+        success: false,
+        message: 'Course thumbnail is required.',
+      });
+    }
 
     console.log('Request Body: ', req.body);
     console.log('Request Files: ', req.files);
 
+    // console.log("debug");
+    // console.log("Destructured: courseName", courseName);
+    // console.log("Destructured: courseDescription", courseDescription);
+    // console.log("Destructured: price", price);
+    // console.log("Destructured: tags", tags);
+    // console.log("Destructured: whatWillYouLearn", whatWillYouLearn);
+    // console.log("Destructured: category", category);
+    // console.log("Destructured: status", status);
+    // console.log("Destructured: instructions", instructions);
+    // console.log("Accessed thumbnail:", thumbnail);
+    // console.log("debug");
+
     // validation
     if (
-      !thumbnail ||
       !courseName ||
       !courseDescription ||
       !price ||
       !category ||
-      !whatYouWillLearn ||
+      !whatWillYouLearn ||
       !instructions ||
       !status ||
       !tags
@@ -81,10 +98,10 @@ exports.createCourse = async (req, res) => {
     //   });
     // }
 
-    // if (!whatYouWillLearn) {
+    // if (!whatWillYouLearn) {
     //   return res.status(400).json({
     //     succes: false,
-    //     message: 'whatYouWillLearn is required',
+    //     message: 'whatWillYouLearn is required',
     //   });
     // }
 
@@ -140,7 +157,7 @@ exports.createCourse = async (req, res) => {
     const newCourse = await Course.create({
       courseName,
       courseDescription: courseDescription,
-      whatYouWillLearn,
+      whatWillYouLearn,
       price,
       thumbnail: uploaded_thumbnail.secure_url,
       category,

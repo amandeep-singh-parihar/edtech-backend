@@ -20,7 +20,7 @@ const {
 const {
   createCategory,
   showAllcategories,
-  categoryPageDetails,
+  getcategoryPageDetails,
 } = require('../controllers/categoryController');
 
 // sections controllers import
@@ -92,7 +92,7 @@ router.post('/updateCourseProgress', auth, isStudent, updateCourseProgress);
 // Category can Only be Created by Admin
 router.post('/createCategory', auth, isAdmin, createCategory);
 router.get('/showAllCategories', showAllcategories);
-router.post('/getCategoryPageDetails', categoryPageDetails);
+router.post('/getCategoryPageDetails', getcategoryPageDetails);
 
 /* ************************************************* Rating and Review********************** */
 /* ************************************************* Rating and Review********************** */
